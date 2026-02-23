@@ -85,6 +85,7 @@
         display: flex;
         gap: 10px;
         justify-content: center;
+        flex-wrap: wrap; /* allow wrapping */
     }
 
     .pill-input {
@@ -115,6 +116,20 @@
 
     .save-btn:hover {
         background: #f3f0fa;
+    }
+
+    /* ⭐ Mobile-friendly layout for Add Item */
+    @media (max-width: 480px) {
+        .input-row {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .save-btn {
+            width: 100%;
+            padding-top: 14px;
+            padding-bottom: 14px;
+        }
     }
 
     .item-row {
@@ -301,7 +316,7 @@
 
         inputArea.innerHTML = `
             <div class="input-row">
-                <input type="text" id="pillInput" class="pill-input" placeholder="Enter medication name">
+                <input type="text" id="pillInput" class="pill-input" placeholder="Type item name">
                 <button class="save-btn" id="saveBtn">Save</button>
             </div>
         `;
