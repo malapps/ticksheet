@@ -351,13 +351,10 @@
                 <span class="custom-checkbox"></span>
             </label>
 
-            <button class="icon-btn edit-btn" title="Edit">🖉</button>
             <button class="icon-btn delete-btn" title="Delete">✖</button>
         `;
 
-        const labelDiv = row.querySelector('.item-label');
         const checkbox = row.querySelector('input[type="checkbox"]');
-        const editBtn = row.querySelector('.edit-btn');
         const deleteBtn = row.querySelector('.delete-btn');
 
         row.addEventListener('click', (e) => {
@@ -379,56 +376,6 @@
 
             itemRef.set({ checked: checkbox.checked }, { merge: true });
         });
-
-        /* Edit label */
-        function enterEditMode() {
-            const currentText = labelDiv.textContent;
-
-            labelDiv.innerHTML = `
-                <input type="text" class="pill-input" value="${currentText}">
-            `;
-            const input = labelDiv.querySelector('input');
-            input.focus();
-
-            editBtn.textContent = 'Save';
-            editBtn.title = 'Save';
-
-            editBtn.onclick = async () => {
-                const newText = input.value.trim();
-                const finalText = newText || currentText;
-
-                const dateKey = getDateKeyFromOffset(currentOffset);
-
-                const oldRef = db.collection("users")
-                    .doc(userId)
-                    .collection("days")
-                    .doc(dateKey)
-                    .collection("items")
-                    .doc(currentText);
-
-                const newRef = db.collection("users")
-                    .doc(userId)
-                    .collection("days")
-                    .doc(dateKey)
-                    .collection("items")
-                    .doc(finalText);
-
-                await newRef.set({
-                    label: finalText,
-                    checked: checkbox.checked
-                });
-
-                await oldRef.delete();
-
-                labelDiv.textContent = finalText;
-
-                editBtn.textContent = '🖉';
-                editBtn.title = 'Edit';
-                editBtn.onclick = enterEditMode;
-            };
-        }
-
-        editBtn.onclick = enterEditMode;
 
         /* Delete item */
         deleteBtn.addEventListener('click', async () => {
