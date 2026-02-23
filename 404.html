@@ -224,7 +224,7 @@
         <button id="addItemBtn" class="add-btn">Add item</button>
     </div>
 
-    <!-- INPUT AREA (appears only when adding) -->
+    <!-- INPUT AREA -->
     <div id="inputArea"></div>
 
 </div>
@@ -234,7 +234,21 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script>
-    /* FIREBASE CONFIG */
+    /* ---------------- VANITY URL EXTRACTION ---------------- */
+    function extractUserIdFromUrl() {
+        const parts = window.location.pathname.split("/").filter(Boolean);
+        const last = parts[parts.length - 1];
+
+        if (!last || last.toLowerCase() === "ticksheet") {
+            return "nc"; // fallback
+        }
+
+        return last.toLowerCase();
+    }
+
+    const userId = extractUserIdFromUrl();
+
+    /* ---------------- FIREBASE CONFIG ---------------- */
     const firebaseConfig = {
         apiKey: "AIzaSyAKux_A12z_UGBFhvVFiFCfbDG9pJGhcuQ",
         authDomain: "tick-17523.firebaseapp.com",
@@ -247,9 +261,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    const userId = "nc";
-
-    /* DATE HELPERS */
+    /* ---------------- DATE HELPERS ---------------- */
     function getDateKeyFromOffset(offset) {
         const d = new Date();
         d.setDate(d.getDate() - offset);
@@ -269,11 +281,10 @@
 
     let currentOffset = 0;
 
-    /* DOM ELEMENTS */
+    /* ---------------- DOM ELEMENTS ---------------- */
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
     const dateLabel = document.getElementById('dateLabel');
-    const addItemBtn = document.getElementById('addItemBtn');
     const addArea = document.getElementById('addArea');
     const inputArea = document.getElementById('inputArea');
     const itemsList = document.getElementById('itemsList');
@@ -284,9 +295,9 @@
         });
     }
 
-    /* SHOW INPUT ROW (replaces Add button) */
+    /* ---------------- SHOW INPUT ROW ---------------- */
     function showInputRow() {
-        addArea.innerHTML = "";  // hide Add button
+        addArea.innerHTML = ""; // hide Add button
 
         inputArea.innerHTML = `
             <div class="input-row">
@@ -298,7 +309,7 @@
         document.getElementById('saveBtn').addEventListener('click', saveItem);
     }
 
-    /* SAVE NEW LABEL */
+    /* ---------------- SAVE NEW LABEL ---------------- */
     function saveItem() {
         const input = document.getElementById('pillInput');
         const label = input.value.trim();
@@ -325,7 +336,7 @@
         document.getElementById('addItemBtn').addEventListener('click', showInputRow);
     }
 
-    /* ADD ROW TO UI */
+    /* ---------------- ADD ROW TO UI ---------------- */
     function addItemToList(label, checked) {
         if (!label) return;
 
@@ -437,7 +448,7 @@
         itemsList.appendChild(row);
     }
 
-    /* LOAD ITEMS FOR CURRENT DAY */
+    /* ---------------- LOAD ITEMS FOR CURRENT DAY ---------------- */
     function loadItemsForOffset(offset) {
         itemsList.innerHTML = "";
         inputArea.innerHTML = "";
@@ -467,7 +478,7 @@
         nextBtn.disabled = offset <= 0;
     }
 
-    /* NAVIGATION BUTTONS */
+    /* ---------------- NAVIGATION BUTTONS ---------------- */
     prevBtn.addEventListener('click', () => {
         if (currentOffset < 9) {
             currentOffset++;
@@ -482,7 +493,7 @@
         }
     });
 
-    /* INITIAL LOAD */
+    /* ---------------- INITIAL LOAD ---------------- */
     loadItemsForOffset(0);
 
     document.addEventListener('click', (e) => {
