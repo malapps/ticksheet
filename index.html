@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tick Sheet</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background: #F5F5F5;
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 600px;
+        padding: 20px;
+        box-sizing: border-box;
+        text-align: center;
+    }
+
+    .logo {
+        width: 150px;
+        margin: 10px auto 20px auto;
+        display: block;
+    }
+
+    .instructions {
+        font-size: 17px;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .input-row {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 10px;
+    }
+
+    .name-input {
+        flex: 1;
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 12px;
+        border: 1px solid #aaa;
+        background: #fff;
+        outline: none;
+        transition: 0.2s;
+    }
+
+    .name-input:focus {
+        border-color: #412d77;
+        box-shadow: 0 0 4px rgba(65, 45, 119, 0.6);
+    }
+
+    .create-btn {
+        padding: 0 18px;
+        font-size: 16px;
+        background: white;
+        color: black;
+        border: 2px solid #412d77;
+        border-radius: 8px;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .create-btn:hover {
+        background: #f3f0fa;
+    }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+    <img src="tslogo.png" alt="Tick Sheet Logo" class="logo">
+
+    <div class="instructions">
+        Enter a unique name to create your own tick sheet (no signup needed)
+    </div>
+
+    <div class="input-row">
+        <input id="nameInput" type="text" class="name-input" placeholder="e.g. type your initials">
+        <button id="createBtn" class="create-btn">Create My Sheet</button>
+    </div>
+
+</div>
+
+<script>
+    document.getElementById("createBtn").addEventListener("click", () => {
+        const name = document.getElementById("nameInput").value.trim().toLowerCase();
+
+        if (!name) return;
+
+        // Redirect to vanity URL
+        window.location.href = "./" + name;
+    });
+</script>
+
+</body>
+</html>
