@@ -36,13 +36,12 @@
     }
 
     .input-row {
-       display: flex;
-       flex-wrap: wrap;      /* ⭐ allows wrapping on small screens */
-       gap: 10px;
-       justify-content: center;
-       margin-top: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 10px;
     }
-
 
     .name-input {
         flex: 1;
@@ -71,16 +70,21 @@
         white-space: nowrap;
     }
 
-    @media (max-width: 480px) {
-    .create-btn {
-        padding-top: 14px;
-        padding-bottom: 14px;
-        width: 100%; /* optional but recommended for mobile ergonomics */
-    }
-    }
-
     .create-btn:hover {
         background: #f3f0fa;
+    }
+
+    @media (max-width: 480px) {
+        .input-row {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .create-btn {
+            width: 100%;
+            padding-top: 14px;
+            padding-bottom: 14px;
+        }
     }
 </style>
 </head>
@@ -102,12 +106,15 @@
 </div>
 
 <script>
+    /* AUTO-REDIRECT TO LAST USED SHEET */
+    const last = localStorage.getItem("lastSheet");
+    if (last) {
+        window.location.href = "./" + last;
+    }
+
     document.getElementById("createBtn").addEventListener("click", () => {
         const name = document.getElementById("nameInput").value.trim().toLowerCase();
-
         if (!name) return;
-
-        // Redirect to vanity URL
         window.location.href = "./" + name;
     });
 </script>
