@@ -345,8 +345,6 @@ async function saveItem() {
         .collection("master").doc(label)
         .set({ label: label });
 
-    addItemToList(label, false);
-
     inputArea.innerHTML = "";
     addArea.innerHTML = `<button id="addItemBtn" class="add-btn">Add item</button>`;
     document.getElementById('addItemBtn').addEventListener('click', showInputRow);
@@ -403,6 +401,9 @@ function addItemToList(label, checked) {
     itemsList.appendChild(row);
 }
 
+/* ---------------- REAL-TIME LISTENER HANDLING ---------------- */
+let unsubscribeDayListener = null;
+
 /* ---------------- LOAD ITEMS (MASTER + DAY MERGE) ---------------- */
 async function loadItemsForOffset(offset) {
     itemsList.innerHTML = "";
@@ -413,35 +414,44 @@ async function loadItemsForOffset(offset) {
 
     const dateKey = getDateKeyFromOffset(offset);
 
-    /* Load master list */
+    /* Load master list once */
     const masterSnap = await db.collection("users").doc(userId)
         .collection("master").get();
 
     const masterLabels = masterSnap.docs.map(d => d.id);
 
-    /* Load today's list */
-    const daySnap = await db.collection("users").doc(userId)
+    /* Remove previous listener */
+    if (unsubscribeDayListener) {
+        unsubscribeDayListener();
+        unsubscribeDayListener = null;
+    }
+
+    /* Real-time listener for day items */
+    unsubscribeDayListener = db.collection("users").doc(userId)
         .collection("days").doc(dateKey)
-        .collection("items").get();
+        .collection("items")
+        .onSnapshot(async daySnap => {
 
-    const dayItems = {};
-    daySnap.forEach(doc => dayItems[doc.id] = doc.data());
+            const dayItems = {};
+            daySnap.forEach(doc => dayItems[doc.id] = doc.data());
 
-    /* Merge: ensure all master labels exist for today */
-    for (const label of masterLabels) {
-        if (!dayItems[label]) {
-            await db.collection("users").doc(userId)
-                .collection("days").doc(dateKey)
-                .collection("items").doc(label)
-                .set({ label: label, checked: false });
-            dayItems[label] = { label: label, checked: false };
-        }
-    }
+            /* Ensure all master labels exist for today */
+            for (const label of masterLabels) {
+                if (!dayItems[label]) {
+                    await db.collection("users").doc(userId)
+                        .collection("days").doc(dateKey)
+                        .collection("items").doc(label)
+                        .set({ label: label, checked: false });
+                    dayItems[label] = { label: label, checked: false };
+                }
+            }
 
-    /* Render */
-    for (const label of Object.keys(dayItems)) {
-        addItemToList(label, dayItems[label].checked);
-    }
+            /* Re-render UI */
+            itemsList.innerHTML = "";
+            for (const label of Object.keys(dayItems)) {
+                addItemToList(label, dayItems[label].checked);
+            }
+        });
 
     dateLabel.textContent = getFriendlyDateLabel(offset);
     prevBtn.disabled = offset >= 9;
